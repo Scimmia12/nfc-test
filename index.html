@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Reindirizzamento…</title>
+    <meta http-equiv="refresh" content="0; url=nfc-cert/" />
+    <script>
+      (function () {
+        var target = 'nfc-cert/';
+        var qs = location.search || '';
+        var hash = location.hash || '';
+        // Reindirizza preservando query (?code=...) e hash
+        location.replace(target + qs + hash);
+      })();
+    </script>
+  </head>
+  <body>
+    <p>Reindirizzamento alla pagina del certificato… Se non accade automaticamente, <a href="nfc-cert/">clicca qui</a>.</p>
+  </body>
+  </html>
+

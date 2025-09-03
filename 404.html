@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pagina non trovata – Reindirizzamento</title>
+    <style>
+      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; padding: 24px; }
+      code { background: rgba(0,0,0,.05); padding: 2px 6px; border-radius: 6px; }
+    </style>
+    <script>
+      (function () {
+        try {
+          var path = location.pathname; // es: /nfc-test/AB12
+          var parts = path.split('/').filter(Boolean);
+          // Calcola la base del repo (es: /nfc-test/)
+          var base = '/';
+          if (parts.length > 0) base += parts[0] + '/';
+
+          // Estrai l'ultimo segmento come possibile codice
+          var last = parts[parts.length - 1] || '';
+          var search = '';
+          if (/^[A-Za-z0-9]{4,5}$/.test(last)) {
+            search = '?code=' + last;
+          }
+
+          var url = base + 'nfc-cert/' + search + (location.hash || '');
+          location.replace(url);
+        } catch (e) {
+          // Se qualcosa va storto, non bloccare la pagina
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <h1>Pagina non trovata</h1>
+    <p>Se non vieni reindirizzato automaticamente, apri <a href="./nfc-cert/">la pagina del certificato</a> e, se serve, aggiungi <code>?code=AB12</code> all'URL.</p>
+  </body>
+  </html>
+
