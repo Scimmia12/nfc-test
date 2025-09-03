@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Certificato Autenticità</title>
+    <meta name="color-scheme" content="light dark" />
+    <style>
+      :root {
+        --fg: #1f2937;
+        --bg: #ffffff;
+        --muted: #6b7280;
+        --accent: #111827;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root { --fg:#e5e7eb; --bg:#0b0f14; --muted:#9ca3af; --accent:#f9fafb; }
+      }
+      html, body { height: 100%; }
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+        color: var(--fg);
+        background: radial-gradient(1200px 800px at 30% 10%, rgba(0,0,0,0.03), transparent 60%), var(--bg);
+      }
+      main {
+        min-height: 100%;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+      }
+      .card {
+        width: min(680px, 92vw);
+        border-radius: 16px;
+        border: 1px solid rgba(0,0,0,0.08);
+        background: rgba(255,255,255,0.6);
+        backdrop-filter: blur(6px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        padding: 28px 24px;
+      }
+      @media (prefers-color-scheme: dark) {
+        .card { background: rgba(17,24,39,0.35); border-color: rgba(255,255,255,0.08); }
+      }
+      h1 {
+        font-size: clamp(22px, 3.5vw, 28px);
+        line-height: 1.2;
+        margin: 0 0 14px 0;
+        color: var(--accent);
+        letter-spacing: 0.2px;
+      }
+      .label { color: var(--muted); font-size: 14px; }
+      .code {
+        font-variant-numeric: tabular-nums;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        font-size: clamp(28px, 7.5vw, 56px);
+        letter-spacing: 2px;
+        padding: 10px 14px;
+        border-radius: 12px;
+        background: rgba(0,0,0,0.04);
+        display: inline-block;
+      }
+      @media (prefers-color-scheme: dark) {
+        .code { background: rgba(255,255,255,0.06); }
+      }
+      .error { color: #b91c1c; margin-top: 10px; font-size: 14px; }
+      @media (prefers-color-scheme: dark) { .error { color: #fca5a5; } }
+      .sr-only {
+        position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+        overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+      }
+      .footer { margin-top: 18px; font-size: 12px; color: var(--muted); }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="card" role="region" aria-labelledby="titolo">
+        <h1 id="titolo">Certificato Autenticità:</h1>
+        <div class="label sr-only" id="code-label">Codice</div>
+        <div class="code" id="code" aria-labelledby="code-label">—</div>
+        <div class="error" id="error" hidden></div>
+        <div class="footer" id="hint"></div>
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        function extractCode() {
+          try {
+            const url = new URL(window.location.href);
+            let code = url.searchParams.get('code');
+            if (!code) {
+              const parts = url.pathname.split('/').filter(Boolean);
+              code = parts[parts.length - 1];
+              if (code && code.toLowerCase() === 'index.html') code = undefined;
+            }
+            return code || '';
+          } catch (_) {
+            return '';
+          }
+        }
+
+        function isValid(code) {
+          return /^[A-Za-z0-9]{4,5}$/.test(code);
+        }
+
+        const codeEl = document.getElementById('code');
+        const errEl = document.getElementById('error');
+        const hintEl = document.getElementById('hint');
+
+        const code = extractCode();
+        if (!code) {
+          codeEl.textContent = '—';
+          errEl.hidden = false;
+          errEl.textContent = 'Codice mancante. Aggiungi ?code=AB12 al link oppure usa /AB12.';
+          hintEl.textContent = 'Esempi: ?code=AB12 • /AB12';
+          return;
+        }
+
+        if (!isValid(code)) {
+          codeEl.textContent = code;
+          errEl.hidden = false;
+          errEl.textContent = 'Formato non valido. Usa 4-5 caratteri alfanumerici (A-Z, 0-9).';
+          hintEl.textContent = 'Esempi: AB12, 1A2B3';
+        } else {
+          const normalized = code.toUpperCase();
+          codeEl.textContent = normalized;
+          document.title = 'Certificato ' + normalized;
+          hintEl.textContent = '';
+        }
+      })();
+    </script>
+  </body>
+  </html>
+
