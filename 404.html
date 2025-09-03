@@ -20,7 +20,7 @@
           // Estrai l'ultimo segmento come possibile codice
           var last = parts[parts.length - 1] || '';
           var search = '';
-          if (/^[A-Za-z0-9]{4,5}$/.test(last)) {
+          if (/^[A-Za-z0-9]{5}$/.test(last)) {
             search = '?code=' + last;
           }
 
@@ -37,4 +37,3 @@
     <p>Se non vieni reindirizzato automaticamente, apri <a href="./nfc-cert/">la pagina del certificato</a> e, se serve, aggiungi <code>?code=AB12</code> all'URL.</p>
   </body>
   </html>
-

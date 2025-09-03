@@ -78,6 +78,19 @@
         <div class="code" id="code" aria-labelledby="code-label">—</div>
         <div class="error" id="error" hidden></div>
         <div class="footer" id="hint"></div>
+        <div style="margin-top:14px">
+          <button id="copy-btn" type="button" hidden
+            style="
+              appearance:none; border:none; cursor:pointer;
+              padding:12px 18px; border-radius:12px; font-weight:600;
+              background:linear-gradient(180deg,#2563eb,#1d4ed8);
+              color:white; box-shadow:0 6px 14px rgba(29,78,216,.3);
+              font-size:16px; letter-spacing:.3px;
+            ">
+            COPIA
+          </button>
+          <span id="copy-ok" aria-live="polite" style="margin-left:10px; font-size:12px; color:#059669; display:none;">Copiato</span>
+        </div>
       </section>
     </main>
 
@@ -99,7 +112,8 @@
         }
 
         function isValid(code) {
-          return /^[A-Za-z0-9]{4,5}$/.test(code);
+          // Accetta solo 5 caratteri alfanumerici. Se preferisci solo numeri, usa: /^\d{5}$/
+          return /^[A-Za-z0-9]{5}$/.test(code);
         }
 
         const codeEl = document.getElementById('code');
@@ -107,27 +121,50 @@
         const hintEl = document.getElementById('hint');
 
         const code = extractCode();
-        if (!code) {
-          codeEl.textContent = '—';
-          errEl.hidden = false;
-          errEl.textContent = 'Codice mancante. Aggiungi ?code=AB12 al link oppure usa /AB12.';
-          hintEl.textContent = 'Esempi: ?code=AB12 • /AB12';
+        const copyBtn = document.getElementById('copy-btn');
+        const copyOk = document.getElementById('copy-ok');
+
+        if (!isValid(code)) {
+          // Mostra solo pagina di errore senza spiegazioni
+          document.getElementById('titolo').textContent = 'Certificato non valido';
+          codeEl.hidden = true;
+          errEl.hidden = true;
+          hintEl.hidden = true;
+          copyBtn.hidden = true;
+          document.title = 'Certificato non valido';
           return;
         }
 
-        if (!isValid(code)) {
-          codeEl.textContent = code;
-          errEl.hidden = false;
-          errEl.textContent = 'Formato non valido. Usa 4-5 caratteri alfanumerici (A-Z, 0-9).';
-          hintEl.textContent = 'Esempi: AB12, 1A2B3';
-        } else {
-          const normalized = code.toUpperCase();
-          codeEl.textContent = normalized;
-          document.title = 'Certificato ' + normalized;
-          hintEl.textContent = '';
-        }
+        const normalized = code.toUpperCase();
+        codeEl.hidden = false;
+        codeEl.textContent = normalized;
+        document.title = 'Certificato ' + normalized;
+        errEl.hidden = true;
+        hintEl.hidden = true;
+        copyBtn.hidden = false;
+
+        copyBtn.addEventListener('click', async () => {
+          try {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              await navigator.clipboard.writeText(normalized);
+            } else {
+              const area = document.createElement('textarea');
+              area.value = normalized;
+              area.setAttribute('readonly', '');
+              area.style.position = 'absolute';
+              area.style.left = '-9999px';
+              document.body.appendChild(area);
+              area.select();
+              document.execCommand('copy');
+              document.body.removeChild(area);
+            }
+            copyOk.style.display = 'inline';
+            setTimeout(() => { copyOk.style.display = 'none'; }, 1600);
+          } catch (_) {
+            // In caso di errore, non mostrare dettagli
+          }
+        });
       })();
     </script>
   </body>
   </html>
-
